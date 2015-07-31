@@ -14,10 +14,8 @@ MongoClient.connect(config.MONGO, function(err, db) {
 
     console.log("Connected correctly to server");
 
-    application
-        .setDb(db)
-        .getBot()
-        .on('message', function (msg) {
-            application.handle(msg);
-        });
+    application.setDb(db);
+    application.bot.on('message', function (msg) {
+        application.handle(msg);
+    });
 });
