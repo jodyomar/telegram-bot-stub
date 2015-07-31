@@ -61,33 +61,32 @@ We would crete new command: /weather <City>
 
 Create file: `lib/message/commands/weather.js`
 ```js
-var vow = require('vow');
-var request = require('request');
-var Message = require('../messages/Message');
-var K = 273.15;
-var OPEN_WEATHER_MAP_URL = 'http://api.openweathermap.org/data/2.5/weather?';
+var request = require('superagent'),
+    vow = require('vow');
+var Message = require('../Message');
+var WEATHER_URL = 'http://api.openweathermap.org/data/2.5/weather',
+    K = 273.15;
 
 module.exports = {
-  get: function (commandInfo) {
-    var deferred = vow.defer();
-    request(OPEN_WEATHER_MAP_URL + commandInfo.params, function (err, resp, body) {
-      if (err) {
-        deferred.reject(err);
-        return;
-      }
-      try {
-        body = JSON.parse(body);
-        deferred.resolve(new Message({
-          message: 'Weather in ' + body.name + ': ' + 
-            Math.floor(body.main.temp - K) + '°C. ' + 
-            body.weather.description
-        }));
-      } catch (e) {
-        deferred.reject(e);
-      }
-    });
-    return deferred.promise();
-  }
-}
+    get: function (info) {
+        var deferred = vow.defer();
+        request
+            .get(WEATHER_URL)
+            .query({q: info.params})
+            .end(function (err, resp) {
+                if (err || resp.statusCode != 200) {
+                    deferred.reject(err || new Error('Statuc code: ' + resp.statusCode));
+                    return;
+                }
+                var result = resp.body;
+                deferred.resolve(new Message({
+                    message: 'Weather in ' + result.name + ': ' + 
+                        Math.floor(result.main.temp - K) + '°C. ' + 
+                        result.weather[0].description
+                }));
+            });
+        return deferred.promise();
+    }
+};
 ```
 Now send: "/weather London" and get answer like this: "Weather in London: 17°C. Sky is Clear"
