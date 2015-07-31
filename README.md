@@ -17,6 +17,7 @@ git clone https://github.com/zloylos/telegram-bot-stub.git myTelegramBot
 1. **Message.**
 All types of messages (text / location / photo / custom) have own handler, which located in `lib/message/handlers`).
 The message types are assigned by analyzers `lib/analyzer/analyzers/*`.
+
 For write new message handler you should create new analyzer and new handler. If you use avaible analyzer, change exists handler. 
 
 ### Example
@@ -48,15 +49,17 @@ module.exports = {
   }
 };
 ```
+
 Now when somebody send text message "hello!", bot will answer "Aloha!".
 
 2. **Command.**
 Command start with "/" and can have parameter. Standart command looks like this: **"/search Cafe"**.
-For add command handler you need create JS module in `lib/message/commands/` width name = command. For "/search" command file must be named "search.js". This module must realize interface ICommandHandler `lib/interfaces/ICommandHandler`.
+For add new command handler you need create JS module in `lib/message/commands/` width name = command. For "/search" command file must be named "search.js". This module must realize interface ICommandHandler `lib/interfaces/ICommandHandler`.
 
 ### Example
 We would crete new command: /weather <City>
-Create file: lib/message/commands/weather.js
+
+Create file: `lib/message/commands/weather.js`
 ```js
 var vow = require('vow');
 var request = require('request');
