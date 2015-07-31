@@ -61,7 +61,7 @@ Create file: lib/message/commands/weather.js
 var vow = require('vow');
 var request = require('request');
 var Message = require('../messages/Message');
-var K = 273,15;
+var K = 273.15;
 var OPEN_WEATHER_MAP_URL = 'http://api.openweathermap.org/data/2.5/weather?';
 
 module.exports = {
@@ -75,7 +75,9 @@ module.exports = {
       try {
         body = JSON.parse(body);
         deferred.resolve(new Message({
-          message: 'Weather in ' + body.name + ': ' + Math.floor(body.main.temp - K) + '°C. ' + body.weather.description
+          message: 'Weather in ' + body.name + ': ' + 
+            Math.floor(body.main.temp - K) + '°C. ' + 
+            body.weather.description
         }));
       } catch (e) {
         deferred.reject(e);
