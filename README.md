@@ -31,7 +31,9 @@ module.exports = {
   getData: function () {
     return {
       type: 'HELLO',
-      answer: 'Aloha!'
+      answer: 'Aloha!',
+      // (0, 1]. Weight is important field, which indicate how accurate the result of analyzer.
+      weight: 1
     };
   }
 };
