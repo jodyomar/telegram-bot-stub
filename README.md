@@ -81,7 +81,7 @@ module.exports = {
             .query({q: info.params})
             .end(function (err, resp) {
                 if (err || resp.statusCode != 200) {
-                    deferred.reject(err || new Error('Statuc code: ' + resp.statusCode));
+                    deferred.reject(err || new Error('Status code: ' + resp.statusCode));
                     return;
                 }
                 var result = resp.body;
