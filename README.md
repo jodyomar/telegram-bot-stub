@@ -6,7 +6,6 @@ Project stub for smart telegram bots
 * npm >= 1.2.0
 
 ## Quick start
-
 ``` 
 git clone https://github.com/zloylos/telegram-bot-stub.git <YOUR_PROJECT_NAME>
 cd <YOUR_PROJECT_NAME>
@@ -15,22 +14,37 @@ npm install
 npm start
 ```
 
-## Structure
-### **Message**
+## How it works
+### Project structure: lib folder
+```
+message/handler/    Contains message hadlers.
+message/command/    Contains command handlers. 
+analyzer            Contains message analyzers.
+const               For consts like message types.
+interface           Basic interfaces for handlers and analyzers.
+…
+```
+
+### Idea
+user message -> app -> analyzer -> message handler;
+
+Commands work as part of message handlers.
+
+### Message
 All types of messages (text / location / photo / custom) have own handler, which located in `lib/message/handlers`).
 The message types are assigned by analyzers `lib/analyzer/analyzers/*`.
 
 For write new message handler you should create new analyzer and new handler. If you use avaible analyzer, change exists handler. 
 
 ##### Example
-New analyzer, for example, `lib/analyzer/analyzers/hello.js`
+New analyzer, which delect "hello!" message. Create file hello.js (or with other name) in `lib/analyzer/analyzers/`.
 ```js
 module.exports = {
   is: function (message) {
     return message.text.toLowerCase() == 'hello!';
   },
   
-  getData: function () {
+  getData: function (message) {
     return {
       type: 'HELLO',
       answer: 'Aloha!',
@@ -40,7 +54,7 @@ module.exports = {
   }
 };
 ```
-New message handler: `lib/message/handlers/hello.js`
+Now create message handler: `lib/message/handlers/hello.js`:
 ```js
 // Promise library.
 var vow = require('vow');
@@ -52,10 +66,10 @@ module.exports = {
 };
 ```
 
-Now when somebody send text message "hello!", bot will answer "Aloha!".
+Now when somebody send text message "hello!", bot will answer: "Aloha!".
 
-### **Command**
-Command start with "/" and can have parameter. Standart command looks like this: **"/search Cafe"**.
+### Command
+Command starts with "/" and can have parameter. Standart command looks like this: **"/search Cafe"**.
 For add new command handler you need create JS module in `lib/message/commands/` width name = command. For "/search" command file must be named "search.js". This module must realize interface ICommandHandler `lib/interfaces/ICommandHandler`.
 
 ##### Example
