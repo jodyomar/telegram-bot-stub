@@ -10,10 +10,18 @@
   "license": "MIT",
   "dependencies": {
     "inherit": "^2.2.2",
-    "mongodb": "^2.0.39",
     "node-telegram-bot-api": "^0.10.0",
     "object-assign": "^3.0.0",
     "superagent": "^1.2.0",
     "vow": "^0.4.10"
+  },
+  "devDependencies": {
+    "git-hooks": "^1.0.0-rc.4",
+    "jscs": "^2.0.0",
+    "jshint": "^2.8.0"
+  },
+  "scripts": {
+    "validate": "npm run lint --silent",
+    "lint": "jshint . && jscs ."
   }
 }

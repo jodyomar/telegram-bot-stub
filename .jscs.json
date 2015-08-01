@@ -1,0 +1,11 @@
+{
+    "preset": "yandex",
+    
+    "excludeFiles": [
+        "lib/analyzer/analyzers/**",
+        "lib/message/handlers/**",
+        "lib/message/commands/**",
+        "node_modules/**",
+        ".git/**"
+    ]
+}

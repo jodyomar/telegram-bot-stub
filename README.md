@@ -3,7 +3,6 @@ Project stub for smart telegram bots
 
 ## Requirements
 * Node >= 0.10
-* MongoDB (optional)
 
 ## Install
 1. Clone repository:
@@ -12,7 +11,7 @@ git clone https://github.com/zloylos/telegram-bot-stub.git myTelegramBot
 ```
 2. Fill config file: telegram bot token and MongoDB URL.
 3. Write your bot.
-4. Run `node index.js` (without MongoDB) or `node index.mongo.js` (with MongoDB).
+4. Run `node index.js`
 
 For test bot you can use Heroku. Procfile already included. 
 Bot must be run into worker (command: `heroku ps:scale worker=1`).
@@ -96,6 +95,32 @@ module.exports = {
 };
 ```
 Now send: "/weather London" and get answer like this: "Weather in London: 17°C. Sky is Clear"
+
+## MongoDB
+For using DB you need call method app.setDatabase(<mongodb>). index.js file will looks like this:
+```js
+var MongoClient = require('mongodb').MongoClient;
+var App = require('./lib/App');
+var config = require('./configs/config');
+
+var application = new App({
+    // Setup polling way
+    polling: true
+});
+
+MongoClient.connect(config.MONGO, function(err, db) {
+    if (err) {throw err;}
+
+    console.log("Connected correctly to MongoDB server");
+
+    application.setDatabase(db);
+    application.bot.on('message', function (msg) {
+        application.handle(msg);
+    });
+
+    console.log("App runned");
+});
+```
 
 ### Users
 By default all handlers get user object into info variable (see IMessageHandler and ICommandHandler). If user send location before and ask, for example, weather without parameters, we can asnwer with old location.

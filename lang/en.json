@@ -1,5 +1,5 @@
 {
     "hello": "Hello!",
     "not_found": "Nothing found.",
-    "location_get": "Info will be used for future requests."
+    "location_get": "Location will be used for future requests."
 }
