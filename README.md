@@ -45,7 +45,7 @@ New message handler: `lib/message/handlers/hello.js`
 ```js
 // Promise library.
 var vow = require('vow');
-var Message = require('../messages/Message');
+var Message = require('../Message');
 module.exports = {
   get: function (info) {
     return vow.resolve(new Message(info.answer));
