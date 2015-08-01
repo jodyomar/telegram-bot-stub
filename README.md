@@ -2,19 +2,18 @@
 Project stub for smart telegram bots
 
 ## Requirements
-* Node >= 0.10
+* nodejs >= 0.10
+* npm >= 1.2.0
 
-## Install
-1. Clone repository:
-```
-git clone https://github.com/zloylos/telegram-bot-stub.git myTelegramBot
-```
-2. Fill config file: telegram bot token and MongoDB URL.
-3. Write your bot.
-4. Run `node index.js`
+## Quick start
 
-For test bot you can use Heroku. Procfile already included. 
-Bot must be run into worker (command: `heroku ps:scale worker=1`).
+``` 
+git clone https://github.com/zloylos/telegram-bot-stub.git <YOUR_PROJECT_NAME>
+cd <YOUR_PROJECT_NAME>
+rm -rf .git && git init
+npm install 
+npm start
+```
 
 ## Structure
 ### **Message**

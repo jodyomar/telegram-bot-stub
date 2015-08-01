@@ -21,6 +21,7 @@
     "jshint": "^2.8.0"
   },
   "scripts": {
+    "start": "node index.js",
     "validate": "npm run lint --silent",
     "lint": "jshint . && jscs ."
   }
