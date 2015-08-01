@@ -48,9 +48,7 @@ var vow = require('vow');
 var Message = require('../messages/Message');
 module.exports = {
   get: function (info) {
-    return vow.resolve(new Message({
-      message: info.answer
-    }));
+    return vow.resolve(new Message(info.answer));
   }
 };
 ```
@@ -84,12 +82,12 @@ module.exports = {
           return;
         }
         var result = resp.body;
-        deferred.resolve(new Message({
-          message: 'Weather in ' + result.name + ': ' + 
-            Math.floor(result.main.temp - K) + '°C. ' + 
-            result.weather[0].description
-          }));
-        });
+        var city = result.name;
+        var temperature = Math.floor(result.main.temp - K);
+        var description = result.weather[0].description;
+        
+        deferred.resolve(new Message('Weather in ' + city + ': ' + temperature + '°C. ' + description));
+      });
     return deferred.promise();
   }
 };
@@ -155,12 +153,12 @@ module.exports = {
           return;
         }
         var result = resp.body;
-        deferred.resolve(new Message({
-          message: 'Weather in ' + result.name + ': ' + 
-            Math.floor(result.main.temp - K) + '°C. ' + 
-            result.weather[0].description
-          }));
-        });
+        var city = result.name;
+        var temperature = Math.floor(result.main.temp - K);
+        var description = result.weather[0].description;
+        
+        deferred.resolve(new Message('Weather in ' + city + ': ' + temperature + '°C. ' + description));
+      });
     return deferred.promise();
   }
 };
