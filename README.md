@@ -96,3 +96,48 @@ module.exports = {
 };
 ```
 Now send: "/weather London" and get answer like this: "Weather in London: 17°C. Sky is Clear"
+
+### Users
+By default all handlers get user object into info variable (see IMessageHandler and ICommandHandler). If user send location before and ask, for example, weather without parameters, we can asnwer with old location.
+
+Let's change weather command for work with user.
+```js
+var request = require('superagent');
+var vow = require('vow');
+var Message = require('../Message');
+var WEATHER_URL = 'http://api.openweathermap.org/data/2.5/weather';
+var K = 273.15;
+
+module.exports = {
+  get: function (info) {
+    var deferred = vow.defer();
+    var user = info.user;
+    var query = {q: info.params};
+    
+    if (!info.params && user && user.location) {
+      query = {
+        lat: user.location.latitude, 
+        lon: user.location.longitude
+      };
+    }
+    
+    request
+      .get(WEATHER_URL)
+      .query(query)
+      .end(function (err, resp) {
+        if (err || resp.statusCode != 200) {
+          deferred.reject(err || new Error('Status code: ' + resp.statusCode));
+          return;
+        }
+        var result = resp.body;
+        deferred.resolve(new Message({
+          message: 'Weather in ' + result.name + ': ' + 
+            Math.floor(result.main.temp - K) + '°C. ' + 
+            result.weather[0].description
+          }));
+        });
+    return deferred.promise();
+  }
+};
+```
+Now we can send simple /weather command without params.
