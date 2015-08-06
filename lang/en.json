@@ -1,5 +1,5 @@
 {
     "hello": "Hello!",
-    "not_found": "Nothing found.",
-    "location_get": "Location will be used for future requests."
+    "hello-keywords": ["hello", "hey", "hi"],
+    "weather": "Weather in {city}: {temperature}°C.\n{description}"
 }

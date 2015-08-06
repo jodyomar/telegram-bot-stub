@@ -1,5 +1,5 @@
 {
     "hello": "Привет!",
-    "not_found": "Ничего не найдено",
-    "location_get": "Данные будут учтены при будущих запросах"
+    "hello-keywords": ["привет", "здравствуй"],
+    "weather": "Погода в {city}: {temperature}°C.\n{description}"
 }

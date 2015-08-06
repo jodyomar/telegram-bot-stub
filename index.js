@@ -1,11 +1,16 @@
-var App = require('./lib/App');
-var application = new App({
-    // Setup polling way for bot
-    polling: true
+var TelegramBot = require('telegram-bot-node').Bot;
+var path = require('path');
+var config = require('./configs/config');
+
+var myBot = new TelegramBot(config.TOKEN, {
+    pooling: true,
+    // Folder with plugins.
+    plugins: path.resolve(__dirname, './lib/plugins/')
 });
 
-application.bot.on('message', function (msg) {
-    application.handle(msg);
+// Now listen `message` event.
+myBot.on('message', function (msg) {
+    myBot.handle(msg);
+    // Run plugins.
+    myBot.process();
 });
-
-console.log('App runned');

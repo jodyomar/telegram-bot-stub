@@ -17,116 +17,40 @@ npm start
 ## How it works
 ### Project structure: lib folder
 ```
-message/handler/    Contains message hadlers.
-message/command/    Contains command handlers. 
-analyzer            Contains message analyzers.
-const               For consts like message types.
-interface           Basic interfaces for handlers and analyzers.
-…
+configs/        Token and other info.
+lang/           Localization.
+lib/plugins     Contains bot plugins
+lib/handlers    Common handlers for reuse. If you have command /weather, and react on text with some results.
+lib/providers   Modules for load data.
 ```
 
-### Idea
-user message -> app -> analyzer -> message handler;
+### Messages
+For add new handler, you need create plugin into plugin-folder. More information about plugins you can find [here](https://github.com/zloylos/telegram-bot-node#plugins).
 
-Commands work as part of message handlers.
-
-### Message
-All types of messages (text / location / photo / custom) have own handler, which located in `lib/message/handlers`).
-The message types are assigned by analyzers `lib/analyzer/analyzers/*`.
-
-For write new message handler you should create new analyzer and new handler. If you use avaible analyzer, change exists handler. 
-
-##### Example
-New analyzer, which delect "hello!" message. Create file hello.js (or with other name) in `lib/analyzer/analyzers/`.
-```js
-module.exports = {
-  is: function (message) {
-    return message.text.toLowerCase() == 'hello!';
-  },
-  
-  getData: function (message) {
-    return {
-      type: 'HELLO',
-      answer: 'Aloha!',
-      // (0, 1]. Weight is important field, which indicate how accurate the result of analyzer.
-      weight: 1
-    };
-  }
-};
-```
-Now create message handler: `lib/message/handlers/hello.js`:
-```js
-// Promise library.
-var vow = require('vow');
-var Message = require('../Message');
-module.exports = {
-  get: function (info) {
-    return vow.resolve(new Message(info.answer));
-  }
-};
-```
-
-Now when somebody send text message "hello!", bot will answer: "Aloha!".
-
-### Command
-Command starts with "/" and can have parameter. Standart command looks like this: **"/search Cafe"**.
-For add new command handler you need create JS module in `lib/message/commands/` width name = command. For "/search" command file must be named "search.js". This module must realize interface ICommandHandler `lib/interfaces/ICommandHandler`.
-
-##### Example
-We would crete new command: /weather <City>
-
-Create file: `lib/message/commands/weather.js`
-```js
-var request = require('superagent');
-var vow = require('vow');
-var Message = require('../Message');
-var WEATHER_URL = 'http://api.openweathermap.org/data/2.5/weather';
-var K = 273.15;
-
-module.exports = {
-  get: function (info) {
-    var deferred = vow.defer();
-    request
-      .get(WEATHER_URL)
-      .query({q: info.params})
-      .end(function (err, resp) {
-        if (err || resp.statusCode != 200) {
-          deferred.reject(err || new Error('Status code: ' + resp.statusCode));
-          return;
-        }
-        var result = resp.body;
-        var city = result.name;
-        var temperature = Math.floor(result.main.temp - K);
-        var description = result.weather[0].description;
-        
-        deferred.resolve(new Message('Weather in ' + city + ': ' + temperature + '°C. ' + description));
-      });
-    return deferred.promise();
-  }
-};
-```
-Now send: "/weather London" and get answer like this: "Weather in London: 17°C. Sky is Clear"
 
 ## MongoDB
-For using DB you need call method app.setDatabase(<mongodb>). index.js file will looks like this:
+For using DB you need call method `myBot.setUserCollection(<MongoDBCollection>)`. index.js file will looks like this:
 ```js
 var MongoClient = require('mongodb').MongoClient;
-var App = require('./lib/App');
+var path = require('path'),
+var Bot = require('telegram-bot-node').Bot;
 var config = require('./configs/config');
 
-var application = new App({
+var myBot = new Bot(config.TELEGRAM_TOKEN, {
     // Setup polling way
-    polling: true
+    polling: true,
+    plugins: path.resolve(__dirname, './lib/plugins')
 });
 
-MongoClient.connect(config.MONGO, function(err, db) {
+MongoClient.connect(config.MONGO_URL, function(err, db) {
     if (err) {throw err;}
 
     console.log("Connected correctly to MongoDB server");
 
-    application.setDatabase(db);
-    application.bot.on('message', function (msg) {
-        application.handle(msg);
+    myBot.setUserCollection(db.collection('users');
+    myBot.bot.on('message', function (msg) {
+        myBot.handle(msg);
+        myBot.process();
     });
 
     console.log("App runned");
@@ -134,45 +58,44 @@ MongoClient.connect(config.MONGO, function(err, db) {
 ```
 
 ### Users
-By default all handlers get user object into info variable (see IMessageHandler and ICommandHandler). If user send location before and ask, for example, weather without parameters, we can asnwer with old location.
+By default all handlers get user object in info variable. How it can be used? If user sended location before and ask weather without parameters, we can answer with old location.
 
 Let's change weather command for work with user.
 ```js
+var MESSAGE_TYPES = require('telegram-bot-node').MESSAGE_TYPES;
 var request = require('superagent');
 var vow = require('vow');
-var Message = require('../Message');
 var WEATHER_URL = 'http://api.openweathermap.org/data/2.5/weather';
 var K = 273.15;
 
 module.exports = {
-  get: function (info) {
-    var deferred = vow.defer();
+  type: MESSAGE_TYPES.COMMAND,
+  test: function (info) {
+    return info.data.command === 'weather';
+  },
+  handler: function (info) {
     var user = info.user;
-    var query = {q: info.params};
-    
-    if (!info.params && user && user.location) {
-      query = {
+    var query = !info.data.params && user && user.location ? 
+      {
         lat: user.location.latitude, 
         lon: user.location.longitude
-      };
-    }
+      } : 
+      {q: info.data.params};
     
     request
       .get(WEATHER_URL)
       .query(query)
       .end(function (err, resp) {
         if (err || resp.statusCode != 200) {
-          deferred.reject(err || new Error('Status code: ' + resp.statusCode));
-          return;
+          throw (err || new Error('Status code: ' + resp.statusCode));
         }
         var result = resp.body;
         var city = result.name;
         var temperature = Math.floor(result.main.temp - K);
         var description = result.weather[0].description;
         
-        deferred.resolve(new Message('Weather in ' + city + ': ' + temperature + '°C. ' + description));
+        bot.sendMessage('Weather in ' + city + ': ' + temperature + '°C. ' + description);
       });
-    return deferred.promise();
   }
 };
 ```

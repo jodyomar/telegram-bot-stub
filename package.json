@@ -1,21 +1,21 @@
 {
   "name": "telegram-bot-stub",
   "author": "Denis Hananein <i@zloylos.me> (http://zloy.me/)",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Telegram bot project stub.",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "inherit": "^2.2.2",
-    "node-telegram-bot-api": "^0.10.0",
-    "object-assign": "^3.0.0",
-    "superagent": "^1.2.0",
-    "vow": "^0.4.10"
+    "inherit": "2.2.2",
+    "telegram-bot-node": "^0.1.1",
+    "object-assign": "3.0.0",
+    "superagent": "1.2.0",
+    "vow": "0.4.10"
   },
   "devDependencies": {
-    "git-hooks": "^1.0.0-rc.4",
-    "jscs": "^2.0.0",
-    "jshint": "^2.8.0"
+    "git-hooks": "1.0.0-rc.4",
+    "jscs": "2.0.0",
+    "jshint": "2.8.0"
   },
   "scripts": {
     "start": "node index.js",
