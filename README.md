@@ -1,5 +1,5 @@
 # telegram-bot-stub
-Project stub for smart telegram bots
+Project stub for smart telegram bots based on telegram-bot-node.
 
 ## Requirements
 * nodejs >= 0.10
@@ -29,7 +29,7 @@ For add new handler, you need create plugin into plugin-folder. More information
 
 
 ## MongoDB
-For using DB you need call method `myBot.setUserCollection(<MongoDBCollection>)`. index.js file will looks like this:
+For using DB you need to call method `myBot.setUserCollection(<MongoDBCollection>)`. index.js file will looks like this:
 ```js
 var MongoClient = require('mongodb').MongoClient;
 var path = require('path'),
@@ -50,7 +50,6 @@ MongoClient.connect(config.MONGO_URL, function(err, db) {
     myBot.setUserCollection(db.collection('users');
     myBot.bot.on('message', function (msg) {
         myBot.handle(msg);
-        myBot.process();
     });
 
     console.log("App runned");
@@ -58,11 +57,11 @@ MongoClient.connect(config.MONGO_URL, function(err, db) {
 ```
 
 ### Users
-By default all handlers get user object in info variable. How it can be used? If user sended location before and ask weather without parameters, we can answer with old location.
+By default all handlers get user object in info variable. How can you use it? If user sent location before and ask weather without parameters, you can answer with his old location.
 
-Let's change weather command for work with user.
 ```js
 var MESSAGE_TYPES = require('telegram-bot-node').MESSAGE_TYPES;
+var weatherHandler = require('../handler/weather');
 var request = require('superagent');
 var vow = require('vow');
 var WEATHER_URL = 'http://api.openweathermap.org/data/2.5/weather';
@@ -82,21 +81,8 @@ module.exports = {
       } : 
       {q: info.data.params};
     
-    request
-      .get(WEATHER_URL)
-      .query(query)
-      .end(function (err, resp) {
-        if (err || resp.statusCode != 200) {
-          throw (err || new Error('Status code: ' + resp.statusCode));
-        }
-        var result = resp.body;
-        var city = result.name;
-        var temperature = Math.floor(result.main.temp - K);
-        var description = result.weather[0].description;
-        
-        bot.sendMessage('Weather in ' + city + ': ' + temperature + '°C. ' + description);
-      });
+    return weatherHandler.get(query);
   }
 };
 ```
-Now we can send simple /weather command without params.
+Now we can use /weather command without params.
