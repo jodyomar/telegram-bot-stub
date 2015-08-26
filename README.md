@@ -48,7 +48,7 @@ MongoClient.connect(config.MONGO_URL, function(err, db) {
     console.log("Connected correctly to MongoDB server");
 
     myBot.setUserCollection(db.collection('users');
-    myBot.bot.on('message', function (msg) {
+    myBot.on('message', function (msg) {
         myBot.handle(msg);
     });
 
@@ -72,7 +72,7 @@ module.exports = {
   test: function (info) {
     return info.data.command === 'weather';
   },
-  handler: function (info) {
+  handler: function (info, bot) {
     var user = info.user;
     var query = !info.data.params && user && user.location ? 
       {
