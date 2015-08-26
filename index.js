@@ -8,9 +8,6 @@ var myBot = new TelegramBot(config.TOKEN, {
     plugins: path.resolve(__dirname, './lib/plugins/')
 });
 
-// Now listen `message` event.
 myBot.on('message', function (msg) {
     myBot.handle(msg);
-    // Run plugins.
-    myBot.process();
 });
